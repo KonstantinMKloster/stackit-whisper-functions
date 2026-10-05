@@ -1,5 +1,10 @@
 # STACKIT-Whisper-functions
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+> Replace `<your-github-username>/stackit-whisper-functions` below with your
+> actual fork URL before publishing.
+
 Rebuilds the always-on VM transcription demo from
 [`STACKIT-Whisper-open-ai`](../STACKIT-Whisper-open-ai) as a **STACKIT Function**: a
 container that only runs while it's handling a request and scales to zero
@@ -40,8 +45,10 @@ than sharing the old one.
 | `whisper-fn/` | The actual function: `handler.py`, dependencies, STACKIT Functions manifests |
 | `whisper-fn/.env.example` | Template for the env vars you need (S3 bucket/credentials, model size) — copy to `whisper-fn/.env`, fill in your own values, never commit it |
 | `install-sfn.sh` | Installs the `sfn` CLI (STACKIT Functions CLI) locally |
+| `setup.sh` | One-command local bootstrap: installs the sfn CLI, prepares `whisper-fn/.env`. Creates no cloud resources. |
 | `deploy.sh` | Convenience wrapper: build → auth → confirm → deploy, using `whisper-fn/.env` |
 | `GETTING-STARTED.md` | Step-by-step setup and deploy instructions |
+| `CLAUDE.md` | Condensed context for Claude Code: commands, architecture, cost-safety rule |
 | `Task.md` | Original design/planning notes (background reading, not required to run this) |
 | `Handout.md` | Session log — implementation history and the disk-space blocker that paused the first deploy attempt (background reading, not required to run this) |
 
@@ -60,15 +67,24 @@ that too (buildpack images get rejected by this registry).
 ## Quick start
 
 ```bash
-./install-sfn.sh                                  # install/update the sfn CLI (>= 1.7.0 needed)
-cp whisper-fn/.env.example whisper-fn/.env         # fill in your own S3 bucket/credentials
+git clone https://github.com/<your-github-username>/stackit-whisper-functions.git
+cd stackit-whisper-functions
+./setup.sh                                         # installs sfn CLI, prepares whisper-fn/.env (no cloud resources created)
+```
+
+Then, after filling in `whisper-fn/.env` with your own S3 bucket/credentials:
+
+```bash
 ./deploy.sh <project-id> <registry-image-ref> <registry-username>
 # e.g. ./deploy.sh <your-stackit-project-id> registry.onstackit.cloud/<reg-project>/whisper-fn:0.1.1 'robot$<reg-project>+<robot-name>'
 ```
 
 See [`GETTING-STARTED.md`](GETTING-STARTED.md) for the full walkthrough --
 creating the Object Storage bucket and Container Registry are one-time,
-manual (Portal) steps not covered by `deploy.sh`.
+manual (Portal) steps not covered by `setup.sh` or `deploy.sh`.
+
+See [`CLAUDE.md`](CLAUDE.md) for condensed commands/architecture, and the
+section below for using this repo with Claude Code.
 
 ## Cost note
 
@@ -78,3 +94,22 @@ function instance while it's warm). Per the standing cost rule: no
 `deploy.sh` has its own confirmation prompt built in before it deploys.
 Installing the CLI, building/running the container locally, and `sfn auth login`
 are free and don't need separate sign-off.
+
+## Using with Claude Code
+
+This project includes a [`CLAUDE.md`](CLAUDE.md) that gives Claude Code full
+context on the architecture, commands, and — importantly — the cost-safety
+rule above (never deploy or create cloud resources without explicit
+confirmation).
+
+```bash
+claude    # Start Claude Code — reads CLAUDE.md automatically
+```
+
+## License
+
+MIT — see [LICENSE](LICENSE).
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md).
