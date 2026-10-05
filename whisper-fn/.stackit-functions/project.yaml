@@ -1,0 +1,4 @@
+apiVersion: functions.stackit.cloud/v1alpha
+kind: Project
+metadata:
+  id: <your-stackit-project-id>

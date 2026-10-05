@@ -1,0 +1,9 @@
+apiVersion: functions.stackit.cloud/v1alpha
+kind: Function
+metadata:
+  id: <function-id>
+  name: whisper-fn
+  created: 2026-09-04T08:39:35.384938Z
+  annotations:
+    cli.functions.stackit.cloud/trigger: http
+spec: {}

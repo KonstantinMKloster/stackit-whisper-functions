@@ -1,0 +1,11 @@
+apiVersion: functions.stackit.cloud/v1alpha
+kind: Revision
+metadata:
+  created: 2025-12-31T23:00:00Z
+  annotations:
+    cli.functions.stackit.cloud/runtime: python
+spec:
+  image: registry.onstackit.cloud/<your-registry-project>/whisper-fn:0.1.0
+  limits:
+    plan: f6
+    concurrency: 1

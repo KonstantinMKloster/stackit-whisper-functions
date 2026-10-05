@@ -1,0 +1,9 @@
+function:
+  name: py-template
+  runtime: python
+  trigger: http
+  created: 2026-01-01T00:00:00.000000+01:00
+  limits:
+    plan: f3
+    concurrency: 50
+# This file has been automatically converted to new configuration in ../.stackit-functions

@@ -1,0 +1,114 @@
+"""
+Lightweight local smoke test for handler.py that needs NO Docker, NO Buildpacks,
+and NO heavy pip installs (torch/whisper/boto3 are stubbed via sys.modules).
+
+Why this exists: the local Docker daemon is unresponsive because the host disk
+is at 100% capacity (see Handout.md). This script proves the actual ASGI
+routing/response logic in handler.py is correct right now, without waiting on
+disk space to free up. It does NOT exercise real Whisper transcription or real
+S3 calls -- those still require the full container build once disk space is
+available.
+
+Run: python3 test_handler_local.py
+"""
+import asyncio
+import sys
+import types
+
+
+def _install_stub_modules():
+    # --- stub boto3 ---
+    boto3_stub = types.ModuleType("boto3")
+
+    class _FakeS3Client:
+        def download_file(self, bucket, key, path):
+            with open(path, "wb") as f:
+                f.write(b"fake-video-bytes")
+
+        def upload_file(self, path, bucket, key):
+            with open(path, "r", encoding="utf-8") as f:
+                _FakeS3Client.last_uploaded_text = f.read()
+
+    def _client(service, **kwargs):
+        assert service == "s3"
+        return _FakeS3Client()
+
+    boto3_stub.client = _client
+    sys.modules["boto3"] = boto3_stub
+
+    # --- stub imageio_ffmpeg ---
+    ffmpeg_stub = types.ModuleType("imageio_ffmpeg")
+    ffmpeg_stub.get_ffmpeg_exe = lambda: "/fake/bin/ffmpeg"
+    sys.modules["imageio_ffmpeg"] = ffmpeg_stub
+
+    # --- stub whisper ---
+    whisper_stub = types.ModuleType("whisper")
+
+    class _FakeModel:
+        def transcribe(self, path):
+            return {"text": "hello from fake whisper"}
+
+    whisper_stub.load_model = lambda size: _FakeModel()
+    sys.modules["whisper"] = whisper_stub
+
+    return _FakeS3Client
+
+
+async def _call(fn, scope):
+    sent = []
+
+    async def send(message):
+        sent.append(message)
+
+    async def receive():
+        return {"type": "http.disconnect"}
+
+    await fn.handle(scope, receive, send)
+    status = sent[0]["status"]
+    body = sent[1]["body"].decode("utf-8")
+    return status, body
+
+
+async def main():
+    fake_s3_cls = _install_stub_modules()
+    import importlib
+
+    handler = importlib.import_module("handler")
+
+    fn = handler.new()
+    await fn.start()
+
+    # GET /health -> 200
+    status, body = await _call(fn, {"type": "http", "method": "GET", "path": "/health"})
+    assert status == 200, f"expected 200, got {status}: {body}"
+    print(f"[PASS] GET /health -> {status} {body}")
+
+    # GET /unknown -> 404
+    status, body = await _call(fn, {"type": "http", "method": "GET", "path": "/unknown"})
+    assert status == 404, f"expected 404, got {status}: {body}"
+    print(f"[PASS] GET /unknown -> {status} {body}")
+
+    # POST /transcribe without S3_BUCKET set -> 500 with a clear error message
+    status, body = await _call(fn, {"type": "http", "method": "POST", "path": "/transcribe"})
+    assert status == 500, f"expected 500, got {status}: {body}"
+    assert "S3_BUCKET" in body
+    print(f"[PASS] POST /transcribe (no S3_BUCKET) -> {status} {body}")
+
+    # POST /transcribe with S3_BUCKET set -> full fake pipeline runs end-to-end
+    # NOTE: handler.py reads S3_BUCKET as a module-level constant at import time
+    # (correct for real deployments, where env vars are fixed at container start).
+    # Setting os.environ here wouldn't retroactively change it, so we patch the
+    # already-imported module's constant directly instead.
+    handler.S3_BUCKET = "fake-bucket"
+    status, body = await _call(fn, {"type": "http", "method": "POST", "path": "/transcribe"})
+    assert status == 200, f"expected 200, got {status}: {body}"
+    assert "fake-bucket" in body
+    print(f"[PASS] POST /transcribe (fake S3+whisper) -> {status} {body}")
+    print(f"[PASS] transcript uploaded to fake S3: {fake_s3_cls.last_uploaded_text!r}")
+
+    await fn.stop()
+    print("\nAll local routing/logic checks passed (Docker/whisper/S3 stubbed).")
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
