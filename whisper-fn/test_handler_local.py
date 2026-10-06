@@ -2,12 +2,13 @@
 Lightweight local smoke test for handler.py that needs NO Docker, NO Buildpacks,
 and NO heavy pip installs (torch/whisper/boto3 are stubbed via sys.modules).
 
-Why this exists: the local Docker daemon is unresponsive because the host disk
-is at 100% capacity (see Handout.md). This script proves the actual ASGI
-routing/response logic in handler.py is correct right now, without waiting on
-disk space to free up. It does NOT exercise real Whisper transcription or real
-S3 calls -- those still require the full container build once disk space is
-available.
+Why this exists: it lets you verify the ASGI routing/response logic in
+handler.py is correct without Docker, heavy pip installs, or real S3/STACKIT
+credentials -- useful any time those aren't available or convenient (it was
+originally written to work around a disk-space outage blocking the local
+Docker daemon; see docs/history/Handout.md for that history). It does NOT
+exercise real Whisper transcription or real S3 calls -- those still require
+the full container build (see GETTING-STARTED.md).
 
 Run: python3 test_handler_local.py
 """
