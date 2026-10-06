@@ -5,8 +5,7 @@
 > Replace `<your-github-username>/stackit-whisper-functions` below with your
 > actual fork URL before publishing.
 
-Rebuilds the always-on VM transcription demo from
-[`STACKIT-Whisper-open-ai`](../STACKIT-Whisper-open-ai) as a **STACKIT Function**: a
+Rebuilds an always-on VM transcription demo as a **STACKIT Function**: a
 container that only runs while it's handling a request and scales to zero
 afterwards, instead of a VM that runs (and costs) 24/7.
 
@@ -25,18 +24,17 @@ An HTTP-triggered function (`whisper-fn/`) that, on `POST /transcribe`:
 
 ## Why it exists
 
-The old solution (`STACKIT-Whisper-open-ai/`) works, but it's a Terraform-provisioned
-VM that runs continuously via `cloud-init` and only ever leaves its result on local
-disk — nobody stops it, so it costs money the whole time it's not transcribing
-anything. STACKIT Functions offered a scale-to-zero, HTTP-triggered alternative, so
-this project reimplements the same demo (same input video, same Whisper model
-family) as a function instead of a VM, with the transcript written back to S3 so the
-result is actually retrievable afterwards.
+A Terraform-provisioned-VM version of this demo works, but it runs continuously
+via `cloud-init` and only ever leaves its result on local disk — nobody stops
+it, so it costs money the whole time it's not transcribing anything. STACKIT
+Functions offered a scale-to-zero, HTTP-triggered alternative, so this project
+reimplements the same demo (same input video, same Whisper model family) as a
+function instead of a VM, with the transcript written back to S3 so the result
+is actually retrievable afterwards.
 
-The old project is intentionally left untouched — it has its own project-boundary
-rule (its `CLAUDE.md`) forbidding reuse of its credentials/resources without
-explicit permission, which is why this project provisions its own S3 bucket rather
-than sharing the old one.
+This project provisions its own S3 bucket and Container Registry rather than
+assuming you already have one set up — see [GETTING-STARTED.md](GETTING-STARTED.md)
+for the one-time manual steps.
 
 ## Project layout
 
@@ -49,8 +47,8 @@ than sharing the old one.
 | `deploy.sh` | Convenience wrapper: build → auth → confirm → deploy, using `whisper-fn/.env` |
 | `GETTING-STARTED.md` | Step-by-step setup and deploy instructions |
 | `CLAUDE.md` | Condensed context for Claude Code: commands, architecture, cost-safety rule |
-| `Task.md` | Original design/planning notes (background reading, not required to run this) |
-| `Handout.md` | Session log — implementation history and the disk-space blocker that paused the first deploy attempt (background reading, not required to run this) |
+| `docs/history/Task.md` | Original design/planning notes (background reading, not required to run this) |
+| `docs/history/Handout.md` | Session log — implementation history and the disk-space blocker that paused the first deploy attempt (background reading, not required to run this) |
 
 ## Status
 

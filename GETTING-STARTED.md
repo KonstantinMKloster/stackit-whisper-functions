@@ -20,14 +20,14 @@ buildpack build can't be pushed to this project's Container Registry).
 - `sfn` CLI >= 1.7.0 (`./install-sfn.sh`; older versions fail auth with
   "outdated cli" against this project)
 - `curl`
-- A STACKIT project with Functions enabled, Object Storage bucket, and
-  Container Registry already set up (see below -- all three already exist
+- A STACKIT project with Functions enabled, `Object Storage bucket`, and
+  `Container Registry` already set up (see below -- all three already exist
   for this project as of this writing)
 
 ## 1. Install/update the STACKIT Functions CLI (`sfn`)
 
 ```bash
-cd ~/Projects/dev/STACKIT-Whisper-functions
+cd STACKIT-Whisper-functions   # the directory you just cloned
 ./install-sfn.sh
 export PATH="$HOME/.local/bin:$PATH"   # add to ~/.zshrc to persist
 sfn --version   # must be >= 1.7.0
@@ -180,6 +180,6 @@ Then check the bucket for the uploaded transcript.
 
 ## If something's unclear
 
-`Task.md` has the original design rationale and open questions; `Handout.md`
-has the session-by-session implementation log; `DECISIONS.md` has the
-non-trivial choices made and why.
+`docs/history/Task.md` has the original design rationale and open questions;
+`docs/history/Handout.md` has the session-by-session implementation log;
+`DECISIONS.md` has the non-trivial choices made and why.

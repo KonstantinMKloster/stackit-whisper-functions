@@ -16,9 +16,9 @@ three model sizes under memory caps matching the real plans:
 - `small` (~500 MB checkpoint): confirmed working end-to-end (real
   transcription of `elephants_dream.mp4`) under caps down to 2048 MB.
 
-**Alternative verworfen:** Hosting `large-v3` on a STACKIT Server/VM instead
-of Functions (like the `STACKIT-Whisper-open-ai` reference project) would
-work memory-wise, but loses Scale-to-Zero and runs (and bills) continuously.
+**Alternative verworfen:** Hosting `large-v3` on an always-on STACKIT Server/VM
+instead of Functions would work memory-wise, but loses Scale-to-Zero and runs
+(and bills) continuously.
 Not pursued since the user confirmed `small` is acceptable.
 
 ## 2026-10-02: Dockerfile custom-build, not Cloud Native Buildpacks

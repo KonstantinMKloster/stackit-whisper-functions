@@ -28,7 +28,7 @@ Copy [`.env.example`](.env.example) to `.env` and fill in your own values
 
 | Variable | Default | Purpose |
 |---|---|---|
-| `WHISPER_MODEL` | `small` | Whisper model size (kept small deliberately — see timeout risk in `../Task.md`) |
+| `WHISPER_MODEL` | `small` | Whisper model size (kept small deliberately — see timeout risk in `../docs/history/Task.md`) |
 | `S3_BUCKET` | *(required)* | Bucket to read the video from / write the transcript to |
 | `S3_INPUT_KEY` | `elephants_dream.mp4` | Object key of the source video |
 | `S3_OUTPUT_KEY` | `elephants_dream.txt` | Object key the transcript is written to |
