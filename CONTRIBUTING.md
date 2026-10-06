@@ -5,7 +5,7 @@ Thanks for your interest in improving STACKIT-Whisper-functions.
 ## Development setup
 
 ```bash
-git clone https://github.com/<your-github-username>/stackit-whisper-functions.git
+git clone https://github.com/KonstantinMKloster/stackit-whisper-functions.git
 cd stackit-whisper-functions
 ./setup.sh                                   # installs sfn CLI, prepares whisper-fn/.env
 ```

@@ -2,9 +2,6 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-> Replace `<your-github-username>/stackit-whisper-functions` below with your
-> actual fork URL before publishing.
-
 Rebuilds an always-on VM transcription demo as a **STACKIT Function**: a
 container that only runs while it's handling a request and scales to zero
 afterwards, instead of a VM that runs (and costs) 24/7.
@@ -65,7 +62,7 @@ that too (buildpack images get rejected by this registry).
 ## Quick start
 
 ```bash
-git clone https://github.com/<your-github-username>/stackit-whisper-functions.git
+git clone https://github.com/KonstantinMKloster/stackit-whisper-functions.git
 cd stackit-whisper-functions
 ./setup.sh                                         # installs sfn CLI, prepares whisper-fn/.env (no cloud resources created)
 ```
