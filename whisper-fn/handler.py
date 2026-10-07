@@ -17,7 +17,7 @@ import whisper
 _ffmpeg_exe = imageio_ffmpeg.get_ffmpeg_exe()
 _ffmpeg_dir = os.path.dirname(_ffmpeg_exe)
 _ffmpeg_link = os.path.join(_ffmpeg_dir, "ffmpeg")
-if not os.path.exists(_ffmpeg_link):
+if _ffmpeg_link != _ffmpeg_exe and os.path.isdir(_ffmpeg_dir) and not os.path.exists(_ffmpeg_link):
     os.symlink(_ffmpeg_exe, _ffmpeg_link)
 os.environ["PATH"] = _ffmpeg_dir + os.pathsep + os.environ.get("PATH", "")
 

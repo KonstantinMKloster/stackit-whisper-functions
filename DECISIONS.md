@@ -1,5 +1,27 @@
 # Decisions
 
+## 2026-10-07: Guard the ffmpeg symlink against a non-existent target directory
+
+**Was:** `handler.py`'s module-level ffmpeg-symlink setup now skips the
+`os.symlink` call when `_ffmpeg_dir` doesn't exist, or when the computed
+link path is identical to the source path.
+
+**Warum:** `test_handler_local.py` stubs `imageio_ffmpeg.get_ffmpeg_exe()`
+to return `/fake/bin/ffmpeg`. Since the link path
+(`os.path.join(dirname(src), "ffmpeg")`) happens to equal the stub's own
+path, `os.symlink` tried to create a self-referential symlink inside a
+directory (`/fake/bin`) that doesn't exist on the host, raising
+`FileNotFoundError` and breaking the no-Docker local test on every machine
+(reproduced identically in the original `~/Projects/dev` checkout, so this
+isn't specific to this fork). In the real container the directory always
+exists (it's wherever `pip` installed `imageio_ffmpeg`), so the guard is a
+no-op there.
+
+**Alternative verworfen:** Wrapping the `os.symlink` call in a bare
+`try/except OSError` would also fix the test but silently swallow real
+deployment-time symlink failures too; checking the specific conditions
+(self-link, missing directory) up front keeps real errors loud.
+
 ## 2026-10-02: WHISPER_MODEL small, not large-v3
 
 **Was:** Deploy whisper-fn with `WHISPER_MODEL=small`, not `large-v3` as originally requested.
