@@ -1,0 +1,17 @@
+name: test
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  local-logic-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      # No pip install needed: test_handler_local.py stubs boto3/whisper/imageio_ffmpeg
+      # in-memory, so it only needs the stdlib. See whisper-fn/test_handler_local.py.
+      - run: python3 whisper-fn/test_handler_local.py

@@ -12,8 +12,8 @@ to return `/fake/bin/ffmpeg`. Since the link path
 path, `os.symlink` tried to create a self-referential symlink inside a
 directory (`/fake/bin`) that doesn't exist on the host, raising
 `FileNotFoundError` and breaking the no-Docker local test on every machine
-(reproduced identically in the original `~/Projects/dev` checkout, so this
-isn't specific to this fork). In the real container the directory always
+(reproduced identically in the original, pre-fork checkout, so this isn't
+specific to this fork). In the real container the directory always
 exists (it's wherever `pip` installed `imageio_ffmpeg`), so the guard is a
 no-op there.
 
